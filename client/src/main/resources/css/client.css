@@ -1,0 +1,31 @@
+html{
+	height: 100%;
+ 	overflow-y:scroll;
+}
+
+header{
+	background: #140079;
+	border-bottom: 5px solid #f1be2d;
+	margin-bottom: 10px;
+	color: #ffffff;
+}
+header .logo-font{
+	color: #ffffff;
+	font-size: 25px;
+	font-family: "ƒƒCƒŠƒI";
+}
+
+body{
+	background: #ffffff;
+	color: #34495e;
+	font-family: "ƒƒCƒŠƒI", Meiryo,"ƒqƒ‰ƒMƒmŠpƒS Pro W3", "Hiragino Kaku Gothic Pro",Osaka,"‚l‚r ‚oƒSƒVƒbƒN", "MS PGothic", sans-serif;
+}
+
+footer{
+	background: #ffffff;
+	border-top: 5px solid #140079;
+	bottom: 0;
+	padding: 15px 0;
+	position: absolute;
+	width: 100%;
+}

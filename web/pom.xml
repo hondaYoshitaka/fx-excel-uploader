@@ -235,6 +235,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>net.arnx</groupId>
+			<artifactId>jsonic</artifactId>
+			<version>1.3.0</version>
+		</dependency>
+
+		<dependency>
 			<groupId>fx-excel-upload</groupId>
 			<artifactId>fx-excel-upload-entity</artifactId>
 			<version>${project.version}</version>

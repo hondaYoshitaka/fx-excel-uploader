@@ -24,6 +24,27 @@
 				<version>2.8</version>
 			</extension>
 		</extensions>
+		<plugins>
+			<plugin>
+				<groupId>com.zenjava</groupId>
+				<artifactId>javafx-maven-plugin</artifactId>
+				<version>8.1.2</version>
+				<configuration>
+					<mainClass>fx.excel.upload.application.MainApp</mainClass>
+				</configuration>
+
+				<!-- 開発環境によって書き換える -->
+				<dependencies>
+					<dependency>
+						<groupId>javafx-packager</groupId>
+						<artifactId>javafx-packager</artifactId>
+						<version>1.8.0_20</version>
+						<scope>system</scope>
+						<systemPath>${java.home}/lib/ant-javafx.jar</systemPath>
+					</dependency>
+				</dependencies>
+			</plugin>
+		</plugins>
 	</build>
 
 	<dependencies>
