@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>fx-excel-upload-entity</artifactId>
+
+	<parent>
+		<groupId>fx-excel-upload</groupId>
+		<artifactId>fx-excel-upload</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<properties>
+		<schemaName>demo</schemaName>
+	</properties>
+
+	<build>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-http-lightweight</artifactId>
+				<version>2.8</version>
+			</extension>
+		</extensions>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>wagon-maven-plugin</artifactId>
+				<version>1.0-beta-4</version>
+				<!-- ダンプファイルをダウンロードする -->
+				<configuration>
+					<serverId>falchion-repository</serverId>
+					<url>https://falchion</url>
+					<fromFile>/dav/gsp/${schemaName}.dmp</fromFile>
+					<toDir>${project.build.directory}</toDir>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>jp.co.tis.gsp</groupId>
+				<artifactId>maven-gsp-dba-plugin</artifactId>
+				<version>2.4-SNAPSHOT</version>
+				<configuration>
+					<driver>com.mysql.jdbc.Driver</driver>
+					<url>jdbc:mysql://localhost/${schemaName}</url>
+					<adminUser>root</adminUser>
+					<adminPassword>root</adminPassword>
+					<!-- <driver>oracle.jdbc.driver.OracleDriver</driver> <url>jdbc:oracle:thin:@localhost:1521</url>
+						<adminUser>system</adminUser> <adminPassword>manager</adminPassword> -->
+					<user>${schemaName}</user>
+					<password>${schemaName}</password>
+					<schema>${schemaName}</schema>
+					<rootPackage>jp.co.tis.aurora</rootPackage>
+				</configuration>
+
+				<dependencies>
+					<dependency>
+						<groupId>mysql</groupId>
+						<artifactId>mysql-connector-java</artifactId>
+						<version>5.1.22</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>dba</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>jp.co.tis.gsp</groupId>
+						<artifactId>maven-gsp-dba-plugin</artifactId>
+						<version>2.4-SNAPSHOT</version>
+						<executions>
+							<!-- DDLをObjectBrowserERから生成する -->
+							<execution>
+								<id>generate-ddl</id>
+								<phase>generate-sources</phase>
+								<goals>
+									<goal>generate-ddl</goal>
+								</goals>
+								<configuration>
+									<erdFile>src/main/resources/entity/aurora.edm</erdFile>
+								</configuration>
+							</execution>
+
+							<!-- DDLを実行する -->
+							<execution>
+								<id>execute-ddl</id>
+								<phase>generate-sources</phase>
+								<goals>
+									<goal>execute-ddl</goal>
+								</goals>
+							</execution>
+							<!-- Entityを生成する -->
+							<execution>
+								<id>generate-entity</id>
+								<phase>generate-sources</phase>
+								<goals>
+									<goal>generate-entity</goal>
+								</goals>
+								<configuration>
+									<ignoreTableNamePattern>(PF_.*)</ignoreTableNamePattern>
+								</configuration>
+							</execution>
+
+							<!-- ServiceとNamesクラスを生成する -->
+							<execution>
+								<id>generate-service</id>
+								<phase>process-classes</phase>
+								<goals>
+									<goal>generate-service</goal>
+								</goals>
+							</execution>
+
+							<!-- データをロードする -->
+							<execution>
+								<id>load-data</id>
+								<phase>pre-integration-test</phase>
+								<goals>
+									<goal>load-data</goal>
+								</goals>
+								<configuration>
+									<dataDirectory>src/test/resources/data</dataDirectory>
+								</configuration>
+							</execution>
+
+							<!-- ダンプを作る -->
+							<execution>
+								<id>export-schema</id>
+								<phase>install</phase>
+								<goals>
+									<goal>export-schema</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>wagon-maven-plugin</artifactId>
+						<executions>
+							<!-- ダンプファイルをアップロードする -->
+							<execution>
+								<phase>deploy</phase>
+								<goals>
+									<goal>upload-single</goal>
+								</goals>
+								<configuration>
+									<serverId>falchion-repository</serverId>
+									<fromFile>${project.build.directory}/dump/${schemaName}.dmp</fromFile>
+									<url>dav:https://falchion/dav/GSP/</url>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.seasar.container</groupId>
+			<artifactId>s2-framework</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.seasar.container</groupId>
+			<artifactId>s2-tiger</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.seasar.container</groupId>
+			<artifactId>s2-extension</artifactId>
+		</dependency>
+			<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-jpa_3.0_spec</artifactId>
+			<version>${geronimo.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+		</dependency>
+	</dependencies>
+</project>

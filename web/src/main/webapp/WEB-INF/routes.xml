@@ -1,0 +1,3 @@
+<routes>
+	<root to="Index#index" />
+</routes>
