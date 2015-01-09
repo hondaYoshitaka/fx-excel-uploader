@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.annotation.Resource;
-import javax.servlet.ServletContext;
 
 import net.arnx.jsonic.JSON;
 
@@ -24,14 +23,13 @@ public class ExcelUploadAction {
 	public ExcelUploadForm form;
 	
 	@Resource
-	protected ServletContext application;
+	protected String uploadedFileRootDir;
 	
 	@Execute(validator = false, input = "/")
 	public String upload() {
 		FormFile formFile = form.uploadFile;
 		
-		String rootPath = application.getRealPath("../../../target/datahome");
-		File rootDirecotory = new File(rootPath);
+		File rootDirecotory = new File(uploadedFileRootDir);
 		try {
 			FileUtils.writeByteArrayToFile(new File(rootDirecotory, formFile.getFileName()), formFile.getFileData());
 			

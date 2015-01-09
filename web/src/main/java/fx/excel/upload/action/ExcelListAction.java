@@ -1,10 +1,11 @@
 package fx.excel.upload.action;
 
+import static java.nio.charset.StandardCharsets.*;
+
 import java.io.File;
 import java.util.List;
 
 import javax.annotation.Resource;
-import javax.servlet.ServletContext;
 
 import net.arnx.jsonic.JSON;
 
@@ -15,24 +16,21 @@ import org.seasar.struts.util.ResponseUtil;
 public class ExcelListAction {
 	
 	@Resource
-	protected ServletContext application;
+	protected String uploadedFileRootDir;
 	
 	@Execute(validator = false, input = "/")
 	public String findAllExcels() {
-		String rootPath = application.getRealPath("../../../target/datahome");
-		File rootDirecotory = new File(rootPath);
+		File rootDirecotory = new File(uploadedFileRootDir);
 		
-		String json;
-		if (rootDirecotory.exists()) {
-			List<String> fileNameList = CollectionsUtil.newArrayList();
-			for (File file : rootDirecotory.listFiles()) {
-				fileNameList.add(file.getName());
-			}
-			json = JSON.encode(fileNameList);
-		} else {
-			json = null;
+		if (!rootDirecotory.exists()) {
+			ResponseUtil.write(null, "application/json", "UTF-8");
+			return null;
 		}
-		ResponseUtil.write(json, "application/json", "UTF-8");
+		List<String> fileNameList = CollectionsUtil.newArrayList();
+		for (File file : rootDirecotory.listFiles()) {
+			fileNameList.add(file.getName());
+		}
+		ResponseUtil.write(JSON.encode(fileNameList), "application/json", UTF_8.name());
 		
 		return null;
 	}

@@ -16,11 +16,24 @@
 
 	<!-- Logger ====================================================================== -->
 
+	<logger name="org.apache.commons" additivity="false">
+		<level value="ERROR" />
+	</logger>
+
+	<logger name="jp.co.tis" additivity="false">
+		<level value="ERROR" />
+		<appender-ref ref="exceptionAppender" />
+	</logger>
+
+	<logger name="org.seasar" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="Console_Appender" />
+	</logger>
+
 	<!-- root Logger -->
 	<root>
 		<level value="DEBUG" />
 		<appender-ref ref="Console_Appender" />
-		<appender-ref ref="exceptionAppender" />
 	</root>
 
 </log4j:configuration>

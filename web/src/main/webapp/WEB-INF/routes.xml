@@ -8,4 +8,9 @@
 	<controller name="ExcelUpload">
 		<post path="/excel" to="upload"/>
 	</controller>
+
+	<controller name="ExcelDetail">
+		<get path="/excel/:fileBaseName/:fileExtention" to="show"/>
+	</controller>
+
 </routes>

@@ -5,6 +5,9 @@
 	<include path="convention.dicon"/>
 	<include path="aop.dicon"/>
 	<include path="j2ee.dicon"/>
+	<include path="s2jdbc.dicon"/>
+
+	<include path="upload-file-config.dicon" />
 
 	<component name="actionMessagesThrowsInterceptor" class="org.seasar.struts.interceptor.ActionMessagesThrowsInterceptor"/>
 
