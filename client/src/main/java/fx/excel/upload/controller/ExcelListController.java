@@ -1,19 +1,13 @@
 package fx.excel.upload.controller;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import net.arnx.jsonic.JSON;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClientBuilder;
+import fx.excel.upload.scene.control.SpreadSheetView;
+import fx.excel.upload.scene.control.SpreadSheetView.SpreadSheetProperty;
+import fx.excel.upload.service.ExcelService;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -23,7 +17,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.FocusModel;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 
 public class ExcelListController implements Initializable {
@@ -32,19 +25,19 @@ public class ExcelListController implements Initializable {
 	public ListView<String> excelListView;
 	
 	@FXML
-	public Label excelDetail;
+	public SpreadSheetView excelDetail;
 	
 	/** excelファイル一覧 */
 	public ObservableList<String> fileNames;
 	
-	private static final String GET_EXCEL_LIST_URL = "http://localhost:8080/fx-excel-upload/excel";
+	private ExcelService excelService = new ExcelService();
 	
 	@Override
 	public void initialize(URL paramURL, ResourceBundle paramResourceBundle) {
 		List<String> excelList = null;
 		
 		try {
-			excelList = getRemoteExcelList();
+			excelList = excelService.findAllExcelFileName();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -56,13 +49,31 @@ public class ExcelListController implements Initializable {
 		
 		FocusModel<String> focusModel = excelListView.getFocusModel();
 		focusModel.focusedItemProperty().addListener(new ChangeListener<String>() {
+			
 			@Override
 			public void changed(ObservableValue<? extends String> observableValue, String oldValue, String value) {
-				excelDetail.setText(value);
+				List<List<String>> remoteExcelDetail = null;
 				
-				// TODO サーバから詳細を取得する
+				try {
+					remoteExcelDetail = excelService.findExcelByFileName(value);
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+				int maxSize = 0;
+				for (List<String> rows : remoteExcelDetail) {
+					if (maxSize < rows.size()) {
+						maxSize = rows.size();
+					}
+				}
+				excelDetail.createColumns(maxSize);
 				
-				// TODO 詳細に表示する
+				ObservableList<SpreadSheetProperty> detail = FXCollections.observableArrayList();
+				for (int rowNum = 0; rowNum < remoteExcelDetail.size(); rowNum++) {
+					List<String> rowData = remoteExcelDetail.get(rowNum);
+					
+					detail.add(new SpreadSheetProperty(rowNum, rowData));
+				}
+				excelDetail.setItems(detail);
 			}
 		});
 	}
@@ -71,7 +82,7 @@ public class ExcelListController implements Initializable {
 	public void handleListRefresh(ActionEvent event) {
 		List<String> excelList = null;
 		try {
-			excelList = getRemoteExcelList();
+			excelList = excelService.findAllExcelFileName();
 		} catch (Exception e) {
 			throw new RuntimeException("");
 		}
@@ -79,21 +90,5 @@ public class ExcelListController implements Initializable {
 		for (String name : excelList) {
 			fileNames.add(name);
 		}
-	}
-	
-	private List<String> getRemoteExcelList() throws IOException {
-		HttpClient client = HttpClientBuilder.create().build();
-		
-		HttpGet httpget = new HttpGet(GET_EXCEL_LIST_URL);
-		HttpEntity entity = null;
-		
-		HttpResponse response = client.execute(httpget);
-		entity = response.getEntity();
-		InputStream is = entity.getContent();
-		
-		if (is == null) {
-			return new ArrayList<String>();
-		}
-		return JSON.decode(is);
 	}
 }

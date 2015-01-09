@@ -1,7 +1,7 @@
 @CHARSET "UTF-8";
 
 #container{
-	-fx-pref-width: 700px;
+	-fx-pref-width: 1000px;
 	-fx-pref-height: 700px;
 }
 
@@ -10,11 +10,18 @@
 	-fx-background-color: #140079;
 }
 
+#excel-row-header{
+	-fx-background-color: #DADADA;
+}
+
 .font-color-white{
 	-fx-text-fill: #ffffff;
 }
 
 .excel-list{
-	-fx-pref-width: 700px;
+	-fx-pref-width: 1000px;
 	-fx-pref-height: 100px;
+}
+.spread-sheet{
+	-fx-pref-width: 1000px;
 }

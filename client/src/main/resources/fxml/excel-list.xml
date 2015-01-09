@@ -4,6 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
+<?import fx.excel.upload.scene.control.*?>
 
 <VBox fx:controller="fx.excel.upload.controller.ExcelListController" xmlns:fx="http://javafx.com/fxml" >
 
@@ -15,12 +16,11 @@
 
 	<HBox>
 		<Button fx:id="fileListRefreshBtn" onAction="#handleListRefresh" text="再読込"/>
-		<Button fx:id="fileDetailShowBtn" text="閲覧"/>
 	</HBox>
 
 	<AnchorPane id="detail">
 		<children>
-			<Label fx:id="excelDetail" text="upload-detail" />
+			<SpreadSheetView fx:id="excelDetail" styleClass="spread-sheet" />
 		</children>
 	</AnchorPane>
 </VBox>
