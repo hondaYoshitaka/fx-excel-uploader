@@ -1,3 +1,11 @@
 <routes>
 	<root to="Index#index" />
+
+	<controller name="ExcelList">
+		<get path="/excel" to="findAllExcels"/>
+	</controller>
+
+	<controller name="ExcelUpload">
+		<post path="/excel" to="upload"/>
+	</controller>
 </routes>

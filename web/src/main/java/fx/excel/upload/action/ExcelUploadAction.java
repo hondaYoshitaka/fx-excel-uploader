@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletContext;
 
 import net.arnx.jsonic.JSON;
 
@@ -17,27 +18,31 @@ import org.seasar.struts.util.ResponseUtil;
 import fx.excel.upload.form.ExcelUploadForm;
 
 public class ExcelUploadAction {
-
+	
 	@ActionForm
 	@Resource(name = "excelUploadForm")
 	public ExcelUploadForm form;
-
-	@Execute(validator = true, input = "/")
-	public String uploadTemporary() {
+	
+	@Resource
+	protected ServletContext application;
+	
+	@Execute(validator = false, input = "/")
+	public String upload() {
 		FormFile formFile = form.uploadFile;
-
+		
+		String rootPath = application.getRealPath("../../../target/datahome");
+		File rootDirecotory = new File(rootPath);
 		try {
-			// FIXME write file
-			FileUtils.writeByteArrayToFile(new File(""), formFile.getFileData());
-
+			FileUtils.writeByteArrayToFile(new File(rootDirecotory, formFile.getFileName()), formFile.getFileData());
+			
 		} catch (IOException e) {
 			throw new RuntimeException("ファイルの書き込みに失敗しました。", e);
 		}
 		BeanMap fileNameMap = new BeanMap();
 		fileNameMap.put("fileName", formFile.getFileName());
-
+		
 		ResponseUtil.write(JSON.encode(fileNameMap), "application/json");
-
+		
 		return null;
 	}
 }

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+	<!-- Null Appender -->
+	<appender name="Null_Appender" class="org.apache.log4j.varia.NullAppender">
+	</appender>
+
+	<!-- Console用Appender -->
+	<appender name="Console_Appender" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
+		</layout>
+	</appender>
+
+	<!-- Logger ====================================================================== -->
+
+	<!-- root Logger -->
+	<root>
+		<level value="DEBUG" />
+		<appender-ref ref="Console_Appender" />
+		<appender-ref ref="exceptionAppender" />
+	</root>
+
+</log4j:configuration>
