@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox id="header" xmlns:fx="http://javafx.com/fxml" >
+	<Label styleClass="font-color-white" text="JavaFx Excel Upload" />
+</VBox>

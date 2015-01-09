@@ -1,19 +1,24 @@
 package fx.excel.upload.application;
 
+import static fx.excel.upload.util.ResourceUtil.*;
+
 import java.net.URL;
 
-import fx.excel.upload.util.ResourceUtil;
-
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
 
-	private final URL html = ResourceUtil.getResourceNoException("view/main", "html");
+	private URL header = getResourceNoException("fxml/header","xml");
+
+	private URL excelUpload = getResourceNoException("fxml/excel-upload","xml");
+
+	private URL excelList = getResourceNoException("fxml/excel-list","xml");
+
+	private URL css = getResourceNoException("css/fx-client","css");
 
 	public static void main(String[] args) throws Exception {
 		launch(args);
@@ -21,16 +26,21 @@ public class MainApp extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		final WebView view = new WebView();
-		final WebEngine engine = view.getEngine();
-
 		VBox layout = new VBox();
-		layout.getChildren().addAll(view);
+		layout.setId("container");
 
-		Scene scene = new Scene(layout, 1060, 655);
+		VBox headerPane = FXMLLoader.load(header);
+		VBox uploaderPane = FXMLLoader.load(excelUpload);
+		VBox listPane = FXMLLoader.load(excelList);
+
+		layout.getChildren().addAll(headerPane, uploaderPane, listPane);
+
+		Scene scene = new Scene(layout);
+		scene.getStylesheets().add(css.toExternalForm());
+
 		stage.setScene(scene);
+		stage.setTitle("JavaFx Excelファイルアップロード");
 
-		engine.load(html.toExternalForm());
 		stage.show();
 	}
 }

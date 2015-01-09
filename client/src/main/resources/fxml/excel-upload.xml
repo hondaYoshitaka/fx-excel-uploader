@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox fx:controller="fx.excel.upload.controller.ExcelUploadController" xmlns:fx="http://javafx.com/fxml" >
+
+	<AnchorPane id="file-upload">
+		<Button fx:id="fileUploadBtn" onAction="#handleFileChoose" text="ファイルのアップロード"/>
+	</AnchorPane>
+
+</VBox>

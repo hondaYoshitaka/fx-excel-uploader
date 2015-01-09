@@ -1,0 +1,20 @@
+@CHARSET "UTF-8";
+
+#container{
+	-fx-pref-width: 700px;
+	-fx-pref-height: 700px;
+}
+
+#header{
+	-fx-pref-height: 50px;
+	-fx-background-color: #140079;
+}
+
+.font-color-white{
+	-fx-text-fill: #ffffff;
+}
+
+.excel-list{
+	-fx-pref-width: 700px;
+	-fx-pref-height: 100px;
+}
