@@ -1,4 +1,6 @@
-package fx.excel.upload.action;
+package fx.excel.upload.action.api;
+
+import static java.nio.charset.StandardCharsets.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +10,7 @@ import javax.annotation.Resource;
 
 import net.arnx.jsonic.JSON;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -15,21 +18,59 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.struts.upload.FormFile;
+import org.seasar.framework.beans.util.BeanMap;
 import org.seasar.framework.util.tiger.CollectionsUtil;
 import org.seasar.struts.annotation.ActionForm;
 import org.seasar.struts.annotation.Execute;
 import org.seasar.struts.util.ResponseUtil;
 
-import fx.excel.upload.form.ExcelDetailForm;
+import fx.excel.upload.form.ExcelForm;
 
-public class ExcelDetailAction {
+public class ExcelAction {
 	
 	@ActionForm
-	@Resource(name = "excelDetailForm")
-	public ExcelDetailForm form;
+	@Resource(name = "excelForm")
+	public ExcelForm form;
 	
 	@Resource
 	public String uploadedFileRootDir;
+	
+	@Execute(validator = false, input = "/")
+	public String list() {
+		File rootDirecotory = new File(uploadedFileRootDir);
+		
+		if (!rootDirecotory.exists()) {
+			ResponseUtil.write("[]", "application/json", "UTF-8");
+			return null;
+		}
+		List<String> fileNameList = CollectionsUtil.newArrayList();
+		for (File file : rootDirecotory.listFiles()) {
+			fileNameList.add(file.getName());
+		}
+		ResponseUtil.write(JSON.encode(fileNameList), "application/json", UTF_8.name());
+		
+		return null;
+	}
+	
+	@Execute(validator = false, input = "/")
+	public String upload() {
+		FormFile formFile = form.uploadFile;
+		
+		File rootDirecotory = new File(uploadedFileRootDir);
+		try {
+			FileUtils.writeByteArrayToFile(new File(rootDirecotory, formFile.getFileName()), formFile.getFileData());
+			
+		} catch (IOException e) {
+			throw new RuntimeException("ファイルの書き込みに失敗しました。", e);
+		}
+		BeanMap fileNameMap = new BeanMap();
+		fileNameMap.put("fileName", formFile.getFileName());
+		
+		ResponseUtil.write(JSON.encode(fileNameMap), "application/json");
+		
+		return null;
+	}
 	
 	@Execute(validator = false, input = "/")
 	public String show() throws IOException, InvalidFormatException {
@@ -37,7 +78,7 @@ public class ExcelDetailAction {
 		File xls = new File(rootDirecotory, form.fileBaseName + "." + form.fileExtention);
 		
 		if (!xls.exists()) {
-			throw new RuntimeException("対象のExcelファイルが見つかりませんでした。"+xls.getAbsolutePath());
+			throw new RuntimeException("対象のExcelファイルが見つかりませんでした。" + xls.getAbsolutePath());
 		}
 		Workbook workbook = null;
 		try {
@@ -63,7 +104,7 @@ public class ExcelDetailAction {
 		return null;
 	}
 	
-	public static String getCellValue(Cell cell) {
+	private static String getCellValue(Cell cell) {
 		switch (cell.getCellType()) {
 			case Cell.CELL_TYPE_BOOLEAN:
 				return Boolean.toString(cell.getBooleanCellValue());
