@@ -20,7 +20,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.FocusModel;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.stage.FileChooser;
@@ -61,26 +60,25 @@ public class ExcelViewerContorller implements Initializable {
 			}
 		});
 		
-		FocusModel<ExcelListModel> focusModel = excelListView.getFocusModel();
-		focusModel.focusedItemProperty().addListener(new ChangeListener<ExcelListModel>() {
+		this.excelListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ExcelListModel>() {
 			
 			@Override
-			public void changed(ObservableValue<? extends ExcelListModel> observableValue, ExcelListModel oldValue,
-					ExcelListModel value) {
-				if (value == null || value.excelFileId == null) {
+			public void changed(ObservableValue<? extends ExcelListModel> arg0, ExcelListModel arg1, ExcelListModel arg2) {
+				if (arg2 == null || arg2.excelFileId == null) {
 					return;
 				}
 				List<List<String>> excelDetailData = null;
 				try {
-					excelDetailData = excelService.findByExcelFileId(value.excelFileId);
+					excelDetailData = excelService.findByExcelFileId(arg2.excelFileId);
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
 				int maxSize = 0;
 				for (List<String> cels : excelDetailData) {
-					if (maxSize < cels.size()) {
-						maxSize = cels.size();
+					if (maxSize >= cels.size()) {
+						continue;
 					}
+					maxSize = cels.size();
 				}
 				excelDetail.createColumns(maxSize);
 				
@@ -119,7 +117,7 @@ public class ExcelViewerContorller implements Initializable {
 		try {
 			excelList = excelService.findAllExcelFileName();
 		} catch (Exception e) {
-			throw new RuntimeException("");
+			throw new RuntimeException(e);
 		}
 		excelListModelList.clear();
 		
