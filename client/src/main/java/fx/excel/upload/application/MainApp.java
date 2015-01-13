@@ -12,11 +12,7 @@ import javafx.stage.Stage;
 
 public class MainApp extends Application {
 
-	private URL header = getResourceNoException("fxml/header","xml");
-
-	private URL excelUpload = getResourceNoException("fxml/excel-upload","xml");
-
-	private URL excelList = getResourceNoException("fxml/excel-list","xml");
+	private URL excelViewer = getResourceNoException("fxml/excel-viewer","xml");
 
 	private URL css = getResourceNoException("css/fx-client","css");
 
@@ -26,16 +22,9 @@ public class MainApp extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		VBox layout = new VBox();
-		layout.setId("container");
+		VBox continerView = FXMLLoader.load(excelViewer);
 
-		VBox headerPane = FXMLLoader.load(header);
-		VBox uploaderPane = FXMLLoader.load(excelUpload);
-		VBox listPane = FXMLLoader.load(excelList);
-
-		layout.getChildren().addAll(headerPane, uploaderPane, listPane);
-
-		Scene scene = new Scene(layout);
+		Scene scene = new Scene(continerView);
 		scene.getStylesheets().add(css.toExternalForm());
 
 		stage.setScene(scene);

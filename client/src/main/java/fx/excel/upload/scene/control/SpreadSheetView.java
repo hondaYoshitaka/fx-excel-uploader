@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import fx.excel.upload.scene.control.SpreadSheetView.SpreadSheetProperty;
-
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -17,6 +15,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
+import fx.excel.upload.scene.control.SpreadSheetView.SpreadSheetProperty;
+import fx.excel.upload.util.ExcelUtil;
 
 public class SpreadSheetView extends TableView<SpreadSheetProperty> {
 	
@@ -40,9 +40,11 @@ public class SpreadSheetView extends TableView<SpreadSheetProperty> {
 		
 		// 行のデータ列 の設定をする
 		for (int index = 0; index < columnSize; index++) {
-			final String columnIndex = "" + index;
+			String propertyKey = "" + index;
 			
-			SpreadSheetColumn column = new SpreadSheetColumn(columnIndex);
+			SpreadSheetColumn column = new SpreadSheetColumn(propertyKey);
+			column.setText(ExcelUtil.createCelNumber(index));
+			
 			newColumns.add(column);
 		}
 		columns.addAll(newColumns);
@@ -68,7 +70,6 @@ public class SpreadSheetView extends TableView<SpreadSheetProperty> {
 				}
 			});
 		}
-		
 	}
 	
 	/**
@@ -83,11 +84,10 @@ public class SpreadSheetView extends TableView<SpreadSheetProperty> {
 		public ObjectProperty<Map<String, CelProperty>> cels;
 		
 		public SpreadSheetProperty(int rowNum, List<String> rowDataList) {
-			cels = new SimpleObjectProperty<Map<String, CelProperty>>();
-			
 			rowHeader = new SimpleStringProperty("rowHeader");
-			rowHeader.setValue("" + rowNum);
+			rowHeader.setValue(ExcelUtil.createCelNumber(rowNum));
 			
+			cels = new SimpleObjectProperty<Map<String, CelProperty>>();
 			if (rowDataList != null) {
 				Map<String, CelProperty> map = new HashMap<String, CelProperty>();
 				for (int index = 0; index < rowDataList.size(); index++) {

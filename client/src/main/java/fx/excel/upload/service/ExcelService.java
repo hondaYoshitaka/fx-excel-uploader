@@ -26,7 +26,7 @@ public class ExcelService {
 	
 	private static final String DOMAIN_URL = "http://localhost:8080";
 	
-	private static final String CONTEXT_NAME = "/fx-excel-upload";
+	private static final String CONTEXT_NAME = "";
 	
 	private static final String POST_EXCEL_URL = DOMAIN_URL + CONTEXT_NAME + "/excel";
 	
@@ -34,9 +34,9 @@ public class ExcelService {
 	
 	private static final String GET_EXCEL_DETAIL_URL = DOMAIN_URL + CONTEXT_NAME + "/excel/{{fileName}}/{{extention}}";
 	
+	private HttpClient client = HttpClientBuilder.create().build();
+	
 	public void insert(File excel) throws IOException {
-		HttpClient client = HttpClientBuilder.create().build();
-		
 		HttpPost httpPost = new HttpPost(POST_EXCEL_URL);
 		
 		MultipartEntityBuilder mBuilder = MultipartEntityBuilder.create();
@@ -52,8 +52,6 @@ public class ExcelService {
 	}
 	
 	public List<String> findAllExcelFileName() throws IOException {
-		HttpClient client = HttpClientBuilder.create().build();
-		
 		HttpGet httpget = new HttpGet(GET_EXCEL_LIST_URL);
 		HttpEntity entity = null;
 		
@@ -71,18 +69,11 @@ public class ExcelService {
 	}
 	
 	public List<List<String>> findExcelByFileName(String fileName) throws IOException {
-		HttpClient client = HttpClientBuilder.create().build();
-		
-		String detailUrl = GET_EXCEL_DETAIL_URL;
-		detailUrl = StringUtils.replace(detailUrl, "{{fileName}}", FilenameUtils.getBaseName(fileName));
-		detailUrl = StringUtils.replace(detailUrl, "{{extention}}", FilenameUtils.getExtension(fileName));
-		
-		HttpGet httpget = new HttpGet(detailUrl);
+		HttpGet httpget = new HttpGet(buildDetailUrl(GET_EXCEL_DETAIL_URL, fileName));
 		HttpEntity entity = null;
 		
 		HttpResponse response = client.execute(httpget);
 		if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-			System.err.println(detailUrl);
 			throw new RuntimeException("サーバとの通信に失敗しました。statu:" + response.getStatusLine().getStatusCode());
 		}
 		entity = response.getEntity();
@@ -92,5 +83,13 @@ public class ExcelService {
 			return null;
 		}
 		return JSON.decode(is);
+	}
+	
+	private String buildDetailUrl(String baseUrl, String fileName){
+		String url = new String(baseUrl);
+		url = StringUtils.replace(url, "{{fileName}}", FilenameUtils.getBaseName(fileName));
+		url = StringUtils.replace(url, "{{extention}}", FilenameUtils.getExtension(fileName));
+		
+		return url;
 	}
 }

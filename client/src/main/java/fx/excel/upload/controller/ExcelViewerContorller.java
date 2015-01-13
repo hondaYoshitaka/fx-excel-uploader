@@ -1,13 +1,10 @@
 package fx.excel.upload.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
-
-import fx.excel.upload.scene.control.SpreadSheetView;
-import fx.excel.upload.scene.control.SpreadSheetView.SpreadSheetProperty;
-import fx.excel.upload.service.ExcelService;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -18,9 +15,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.FocusModel;
 import javafx.scene.control.ListView;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
+import fx.excel.upload.scene.control.SpreadSheetView;
+import fx.excel.upload.scene.control.SpreadSheetView.SpreadSheetProperty;
+import fx.excel.upload.service.ExcelService;
 
-public class ExcelListController implements Initializable {
-	
+public class ExcelViewerContorller implements Initializable {
+
 	@FXML
 	public ListView<String> excelListView;
 	
@@ -35,12 +37,12 @@ public class ExcelListController implements Initializable {
 	@Override
 	public void initialize(URL paramURL, ResourceBundle paramResourceBundle) {
 		List<String> excelList = null;
-		
 		try {
 			excelList = excelService.findAllExcelFileName();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+		
 		fileNames = FXCollections.observableArrayList();
 		for (String name : excelList) {
 			fileNames.add(name);
@@ -76,6 +78,24 @@ public class ExcelListController implements Initializable {
 				excelDetail.setItems(detail);
 			}
 		});
+	}
+	
+	@FXML
+	public void handleFileChoose(ActionEvent event) {
+		FileChooser fileChooser = new FileChooser();
+		
+		fileChooser.getExtensionFilters().add(new ExtensionFilter("Excelファイル", "*.xls", "*.xlsx"));
+		
+		File excel = fileChooser.showOpenDialog(null);
+		if (excel == null) {
+			return;
+		}
+		try {
+			excelService.insert(excel);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		handleListRefresh(event);
 	}
 	
 	@FXML

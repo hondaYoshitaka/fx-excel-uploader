@@ -6,15 +6,12 @@
 }
 
 #header{
-	-fx-pref-height: 50px;
 	-fx-background-color: #140079;
+	-fx-padding: 15 0 15 20;
 }
 
-#excel-row-header{
-	-fx-background-color: #DADADA;
-}
-
-.font-color-white{
+.logo-font{
+	-fx-font-size: 20pt;
 	-fx-text-fill: #ffffff;
 }
 
@@ -22,6 +19,13 @@
 	-fx-pref-width: 1000px;
 	-fx-pref-height: 100px;
 }
+
+/* for SpreadSheet */
+
 .spread-sheet{
 	-fx-pref-width: 1000px;
+}
+
+#excel-row-header{
+	-fx-background-color: #DADADA;
 }
