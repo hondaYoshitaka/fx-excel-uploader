@@ -5,7 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import fx.excel.upload.scene.control.SpreadSheetView.SpreadSheetProperty;
+import fx.excel.upload.util.ExcelUtil;
+
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -15,8 +20,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
-import fx.excel.upload.scene.control.SpreadSheetView.SpreadSheetProperty;
-import fx.excel.upload.util.ExcelUtil;
 
 public class SpreadSheetView extends TableView<SpreadSheetProperty> {
 	
@@ -79,13 +82,12 @@ public class SpreadSheetView extends TableView<SpreadSheetProperty> {
 	 */
 	public static class SpreadSheetProperty {
 		
-		public StringProperty rowHeader;
+		public IntegerProperty rowHeader;
 		
 		public ObjectProperty<Map<String, CelProperty>> cels;
 		
 		public SpreadSheetProperty(int rowNum, List<String> rowDataList) {
-			rowHeader = new SimpleStringProperty("rowHeader");
-			rowHeader.setValue(ExcelUtil.createCelNumber(rowNum));
+			rowHeader = new SimpleIntegerProperty(rowNum + 1);
 			
 			cels = new SimpleObjectProperty<Map<String, CelProperty>>();
 			if (rowDataList != null) {
@@ -98,7 +100,16 @@ public class SpreadSheetView extends TableView<SpreadSheetProperty> {
 			}
 		}
 		
-		public StringProperty rowHeaderProperty() {
+		/**
+		 * 行番号を取得します。
+		 * 
+		 * <pre>
+		 * 命名規則: 行のキー(rowHeader) + Property
+		 * </pre>
+		 *
+		 * @return
+		 */
+		public IntegerProperty rowHeaderProperty() {
 			return this.rowHeader;
 		}
 		

@@ -6,6 +6,10 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import fx.excel.upload.scene.control.SpreadSheetView;
+import fx.excel.upload.scene.control.SpreadSheetView.SpreadSheetProperty;
+import fx.excel.upload.service.ExcelService;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -17,12 +21,9 @@ import javafx.scene.control.FocusModel;
 import javafx.scene.control.ListView;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
-import fx.excel.upload.scene.control.SpreadSheetView;
-import fx.excel.upload.scene.control.SpreadSheetView.SpreadSheetProperty;
-import fx.excel.upload.service.ExcelService;
 
 public class ExcelViewerContorller implements Initializable {
-
+	
 	@FXML
 	public ListView<String> excelListView;
 	

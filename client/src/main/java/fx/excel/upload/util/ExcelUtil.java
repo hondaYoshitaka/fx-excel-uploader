@@ -4,32 +4,31 @@ import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.lang.ArrayUtils;
 
-
-/**
- * @author hondayoshitaka
- *
- */
 public class ExcelUtil {
 	
 	private static int ascii_alpha_start = 65;
 	
 	private static int alpha_amount = 26;
 	
-	public static String createCelNumber(int index){
-		if(index < 0){
+	public static String createCelNumber(int index) {
+		byte[] nums = null;
+		
+		if (index < 0) {
 			throw new IllegalArgumentException();
 		}
-		byte[] nums = null;
-		for(int i = index;;){
-			int divide = i / alpha_amount;
-			int mod = i % alpha_amount;
+		
+		for (int i = index;;) {
+			int divide = (i / alpha_amount), mod = (i % alpha_amount);
 			
-			nums = ArrayUtils.add(nums, new Integer(ascii_alpha_start + mod).byteValue());
-			if(i < alpha_amount){
+			byte asciiValue = new Integer(ascii_alpha_start + mod).byteValue();
+			nums = ArrayUtils.add(nums, asciiValue);
+			
+			if (i < alpha_amount) {
 				break;
 			}
-			i = divide;
+			i = (divide - 1);
 		}
-		return new String(nums,StandardCharsets.US_ASCII);
+		ArrayUtils.reverse(nums);
+		return new String(nums, StandardCharsets.US_ASCII);
 	}
 }

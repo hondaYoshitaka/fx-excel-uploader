@@ -85,7 +85,7 @@ public class ExcelService {
 		return JSON.decode(is);
 	}
 	
-	private String buildDetailUrl(String baseUrl, String fileName){
+	private String buildDetailUrl(String baseUrl, String fileName) {
 		String url = new String(baseUrl);
 		url = StringUtils.replace(url, "{{fileName}}", FilenameUtils.getBaseName(fileName));
 		url = StringUtils.replace(url, "{{extention}}", FilenameUtils.getExtension(fileName));
