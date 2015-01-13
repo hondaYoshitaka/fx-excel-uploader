@@ -11,7 +11,7 @@
 	</parent>
 
 	<properties>
-		<schemaName>demo</schemaName>
+		<schemaName>fx_excel</schemaName>
 	</properties>
 
 	<build>
@@ -45,12 +45,15 @@
 					<url>jdbc:mysql://localhost/${schemaName}</url>
 					<adminUser>root</adminUser>
 					<adminPassword>root</adminPassword>
-					<!-- <driver>oracle.jdbc.driver.OracleDriver</driver> <url>jdbc:oracle:thin:@localhost:1521</url>
-						<adminUser>system</adminUser> <adminPassword>manager</adminPassword> -->
+					<!--
+					<driver>oracle.jdbc.driver.OracleDriver</driver>
+					<url>jdbc:oracle:thin:@localhost:1521</url>
+					<adminUser>system</adminUser> <adminPassword>manager</adminPassword>
+					 -->
 					<user>${schemaName}</user>
 					<password>${schemaName}</password>
 					<schema>${schemaName}</schema>
-					<rootPackage>jp.co.tis.aurora</rootPackage>
+					<rootPackage>fx.excel.upload</rootPackage>
 				</configuration>
 
 				<dependencies>
@@ -82,7 +85,7 @@
 									<goal>generate-ddl</goal>
 								</goals>
 								<configuration>
-									<erdFile>src/main/resources/entity/aurora.edm</erdFile>
+									<erdFile>src/main/resources/entity/fx-excel-upload.edm</erdFile>
 								</configuration>
 							</execution>
 
