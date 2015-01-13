@@ -1,12 +1,10 @@
-package fx.excel.upload.form;
+package fx.excel.upload.form.api;
 
 import org.apache.struts.upload.FormFile;
 
 public class ExcelForm {
 	
-	public String fileBaseName;
-	
-	public String fileExtention;
+	public String excelFileId;
 	
 	public FormFile uploadFile;
 	

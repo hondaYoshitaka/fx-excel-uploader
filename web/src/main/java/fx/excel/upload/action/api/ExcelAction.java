@@ -1,6 +1,7 @@
 package fx.excel.upload.action.api;
 
-import static java.nio.charset.StandardCharsets.*;
+import static org.apache.struts.action.ActionMessages.*;
+import static org.seasar.framework.util.LongConversionUtil.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,110 +12,97 @@ import javax.annotation.Resource;
 import net.arnx.jsonic.JSON;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.struts.action.ActionMessage;
+import org.apache.struts.action.ActionMessages;
 import org.apache.struts.upload.FormFile;
 import org.seasar.framework.beans.util.BeanMap;
+import org.seasar.framework.util.StringConversionUtil;
 import org.seasar.framework.util.tiger.CollectionsUtil;
 import org.seasar.struts.annotation.ActionForm;
 import org.seasar.struts.annotation.Execute;
 import org.seasar.struts.util.ResponseUtil;
 
-import fx.excel.upload.form.ExcelForm;
+import fx.excel.upload.entity.ExcelFile;
+import fx.excel.upload.form.api.ExcelForm;
+import fx.excel.upload.logic.ExcelLogic;
+import fx.excel.upload.service.ExcelFileService;
 
 public class ExcelAction {
 	
 	@ActionForm
-	@Resource(name = "excelForm")
+	@Resource(name = "api_excelForm")
 	public ExcelForm form;
+	
+	@Resource
+	protected ExcelFileService excelFileService;
+	
+	@Resource
+	protected ExcelLogic excelLogic;
 	
 	@Resource
 	public String uploadedFileRootDir;
 	
-	@Execute(validator = false, input = "/")
+	@Execute(validator = false)
 	public String list() {
-		File rootDirecotory = new File(uploadedFileRootDir);
+		List<ExcelFile> excelFileList = excelFileService.findAllOrderById();
 		
-		if (!rootDirecotory.exists()) {
-			ResponseUtil.write("[]", "application/json", "UTF-8");
-			return null;
+		List<BeanMap> fileMapList = CollectionsUtil.newArrayList();
+		for (ExcelFile entity : excelFileList) {
+			BeanMap fileNameMap = new BeanMap();
+			fileNameMap.put("excelFileId", StringConversionUtil.toString(entity.excelFileId));
+			fileNameMap.put("fileName", FilenameUtils.getName(entity.filePath));
+			
+			fileMapList.add(fileNameMap);
 		}
-		List<String> fileNameList = CollectionsUtil.newArrayList();
-		for (File file : rootDirecotory.listFiles()) {
-			fileNameList.add(file.getName());
-		}
-		ResponseUtil.write(JSON.encode(fileNameList), "application/json", UTF_8.name());
+		ResponseUtil.write(JSON.encode(fileMapList), "application/json");
 		
 		return null;
 	}
 	
-	@Execute(validator = false, input = "/")
-	public String upload() {
+	@Execute(validate = "validateBeforeShow", input = "/")
+	public String show() throws IOException, InvalidFormatException {
+		ExcelFile excelFile = excelFileService.findById(toLong(form.excelFileId));
+		
+		ResponseUtil.write(excelFile.fileData, "application/json");
+		
+		return null;
+	}
+	
+	@Execute(validator = false)
+	public String upload() throws InvalidFormatException, IOException {
 		FormFile formFile = form.uploadFile;
 		
 		File rootDirecotory = new File(uploadedFileRootDir);
+		File uploadFile = new File(rootDirecotory, formFile.getFileName());
 		try {
-			FileUtils.writeByteArrayToFile(new File(rootDirecotory, formFile.getFileName()), formFile.getFileData());
+			FileUtils.writeByteArrayToFile(uploadFile, formFile.getFileData());
 			
 		} catch (IOException e) {
 			throw new RuntimeException("ファイルの書き込みに失敗しました。", e);
 		}
+		ExcelFile entity = new ExcelFile();
+		entity.filePath = uploadFile.getAbsolutePath();
+		entity.fileData = excelLogic.fetchFileData(uploadFile, 0);
+		excelFileService.insert(entity);
+		
 		BeanMap fileNameMap = new BeanMap();
-		fileNameMap.put("fileName", formFile.getFileName());
+		fileNameMap.put("excelFileId", StringConversionUtil.toString(entity.excelFileId));
+		fileNameMap.put("fileName", FilenameUtils.getName(entity.filePath));
 		
 		ResponseUtil.write(JSON.encode(fileNameMap), "application/json");
 		
 		return null;
 	}
 	
-	@Execute(validator = false, input = "/")
-	public String show() throws IOException, InvalidFormatException {
-		File rootDirecotory = new File(uploadedFileRootDir);
-		File xls = new File(rootDirecotory, form.fileBaseName + "." + form.fileExtention);
+	public ActionMessages validateBeforeShow() {
+		ActionMessages errors = new ActionMessages();
 		
-		if (!xls.exists()) {
-			throw new RuntimeException("対象のExcelファイルが見つかりませんでした。" + xls.getAbsolutePath());
+		ExcelFile excelFile = excelFileService.findById(toLong(form.excelFileId));
+		if (excelFile == null) {
+			errors.add(GLOBAL_MESSAGE, new ActionMessage("対象のExcelファイルが存在しません。", false));
 		}
-		Workbook workbook = null;
-		try {
-			workbook = WorkbookFactory.create(xls);
-			
-			// 最初の1シートのみ読む
-			Sheet sheet = workbook.getSheetAt(0);
-			sheet.setForceFormulaRecalculation(true);
-			
-			List<List<String>> resultList = CollectionsUtil.newArrayList();
-			for (Row row : sheet) {
-				List<String> rowList = CollectionsUtil.newArrayList();
-				for (Cell cell : row) {
-					rowList.add(getCellValue(cell));
-				}
-				resultList.add(rowList);
-			}
-			ResponseUtil.write(JSON.encode(resultList), "application/json");
-			
-		} finally {
-			IOUtils.closeQuietly(workbook);
-		}
-		return null;
-	}
-	
-	private static String getCellValue(Cell cell) {
-		switch (cell.getCellType()) {
-			case Cell.CELL_TYPE_BOOLEAN:
-				return Boolean.toString(cell.getBooleanCellValue());
-			case Cell.CELL_TYPE_FORMULA:
-				return cell.getCellFormula();
-			case Cell.CELL_TYPE_NUMERIC:
-				return Double.toString(cell.getNumericCellValue());
-			case Cell.CELL_TYPE_STRING:
-				return cell.getStringCellValue();
-		}
-		return "";
+		return errors;
 	}
 }

@@ -22,11 +22,16 @@
 
 	<logger name="jp.co.tis" additivity="false">
 		<level value="ERROR" />
-		<appender-ref ref="exceptionAppender" />
+		<appender-ref ref="Console_Appender" />
 	</logger>
 
 	<logger name="org.seasar" additivity="false">
 		<level value="DEBUG" />
+		<appender-ref ref="Console_Appender" />
+	</logger>
+
+	<logger name="fx.excel.upload" additivity="false">
+		<level value="ERROR" />
 		<appender-ref ref="Console_Appender" />
 	</logger>
 
