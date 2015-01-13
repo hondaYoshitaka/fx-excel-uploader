@@ -37,11 +37,12 @@ public class ExcelDetailAction {
 		File xls = new File(rootDirecotory, form.fileBaseName + "." + form.fileExtention);
 		
 		if (!xls.exists()) {
-			throw new RuntimeException("");
+			throw new RuntimeException("対象のExcelファイルが見つかりませんでした。"+xls.getAbsolutePath());
 		}
 		Workbook workbook = null;
 		try {
 			workbook = WorkbookFactory.create(xls);
+			
 			// 最初の1シートのみ読む
 			Sheet sheet = workbook.getSheetAt(0);
 			sheet.setForceFormulaRecalculation(true);

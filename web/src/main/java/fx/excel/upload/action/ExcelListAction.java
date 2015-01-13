@@ -23,7 +23,7 @@ public class ExcelListAction {
 		File rootDirecotory = new File(uploadedFileRootDir);
 		
 		if (!rootDirecotory.exists()) {
-			ResponseUtil.write(null, "application/json", "UTF-8");
+			ResponseUtil.write("[]", "application/json", "UTF-8");
 			return null;
 		}
 		List<String> fileNameList = CollectionsUtil.newArrayList();
