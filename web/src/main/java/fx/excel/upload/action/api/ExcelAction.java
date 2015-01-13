@@ -85,7 +85,14 @@ public class ExcelAction {
 		ExcelFile entity = new ExcelFile();
 		entity.filePath = uploadFile.getAbsolutePath();
 		entity.fileData = excelLogic.fetchFileData(uploadFile, 0);
-		excelFileService.insert(entity);
+		
+		ExcelFile registered = excelFileService.findByFileName(uploadFile.getAbsolutePath());
+		if (registered == null) {
+			excelFileService.insert(entity);
+		} else {
+			entity.excelFileId = registered.excelFileId;
+			excelFileService.update(entity);
+		}
 		
 		BeanMap fileNameMap = new BeanMap();
 		fileNameMap.put("excelFileId", StringConversionUtil.toString(entity.excelFileId));
@@ -96,6 +103,11 @@ public class ExcelAction {
 		return null;
 	}
 	
+	/**
+	 * 詳細データ取得前にデータベースを検証します。
+	 *
+	 * @return
+	 */
 	public ActionMessages validateBeforeShow() {
 		ActionMessages errors = new ActionMessages();
 		
