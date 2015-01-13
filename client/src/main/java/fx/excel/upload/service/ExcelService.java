@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import net.arnx.jsonic.JSON;
 
@@ -32,7 +33,7 @@ public class ExcelService {
 	
 	private static final String GET_EXCEL_LIST_URL = DOMAIN_URL + CONTEXT_NAME + "/excel";
 	
-	private static final String GET_EXCEL_DETAIL_URL = DOMAIN_URL + CONTEXT_NAME + "/excel/{{fileName}}/{{extention}}";
+	private static final String GET_EXCEL_DETAIL_URL = DOMAIN_URL + CONTEXT_NAME + "/excel/{{excelFileId}}";
 	
 	private HttpClient client = HttpClientBuilder.create().build();
 	
@@ -46,49 +47,51 @@ public class ExcelService {
 		httpPost.setEntity(mBuilder.build());
 		
 		HttpResponse response = client.execute(httpPost);
-		if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-			throw new RuntimeException("サーバとの通信に失敗しました。statu:" + response.getStatusLine().getStatusCode());
+		int statusCode = response.getStatusLine().getStatusCode();
+		if (statusCode != HttpStatus.SC_OK) {
+			throw new RuntimeException("サーバとの通信に失敗しました。statu:" + statusCode);
 		}
 	}
 	
-	public List<String> findAllExcelFileName() throws IOException {
+	public List<Map<String, Object>> findAllExcelFileName() throws IOException {
 		HttpGet httpget = new HttpGet(GET_EXCEL_LIST_URL);
 		HttpEntity entity = null;
 		
 		HttpResponse response = client.execute(httpget);
-		if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-			throw new RuntimeException("サーバとの通信に失敗しました。statu:" + response.getStatusLine().getStatusCode());
+		int statusCode = response.getStatusLine().getStatusCode();
+		if (statusCode != HttpStatus.SC_OK) {
+			throw new RuntimeException("サーバとの通信に失敗しました。statu:" + statusCode);
 		}
 		entity = response.getEntity();
 		InputStream is = entity.getContent();
 		
 		if (is == null) {
-			return new ArrayList<String>();
+			return new ArrayList<Map<String, Object>>();
 		}
 		return JSON.decode(is);
 	}
 	
-	public List<List<String>> findExcelByFileName(String fileName) throws IOException {
-		HttpGet httpget = new HttpGet(buildDetailUrl(GET_EXCEL_DETAIL_URL, fileName));
+	public List<List<String>> findByExcelFileId(String excelFileId) throws IOException {
+		HttpGet httpget = new HttpGet(buildDetailUrl(GET_EXCEL_DETAIL_URL, excelFileId));
 		HttpEntity entity = null;
 		
 		HttpResponse response = client.execute(httpget);
-		if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-			throw new RuntimeException("サーバとの通信に失敗しました。statu:" + response.getStatusLine().getStatusCode());
+		int statusCode = response.getStatusLine().getStatusCode();
+		if (statusCode != HttpStatus.SC_OK) {
+			throw new RuntimeException("サーバとの通信に失敗しました。statu:" + statusCode);
 		}
 		entity = response.getEntity();
 		InputStream is = entity.getContent();
 		
 		if (is == null) {
-			return null;
+			return new ArrayList<List<String>>();
 		}
 		return JSON.decode(is);
 	}
 	
-	private String buildDetailUrl(String baseUrl, String fileName) {
+	private String buildDetailUrl(String baseUrl, String excelFileId) {
 		String url = new String(baseUrl);
-		url = StringUtils.replace(url, "{{fileName}}", FilenameUtils.getBaseName(fileName));
-		url = StringUtils.replace(url, "{{extention}}", FilenameUtils.getExtension(fileName));
+		url = StringUtils.replace(url, "{{excelFileId}}", FilenameUtils.getBaseName(excelFileId));
 		
 		return url;
 	}
