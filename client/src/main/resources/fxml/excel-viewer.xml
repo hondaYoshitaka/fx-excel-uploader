@@ -7,7 +7,7 @@
 
 <?import fx.excel.upload.scene.control.*?>
 
-<VBox fx:controller="fx.excel.upload.controller.Controller" id="container" xmlns:fx="http://javafx.com/fxml" >
+<VBox fx:controller="fx.excel.upload.controller.ExcelViewerController" id="container" xmlns:fx="http://javafx.com/fxml" >
 	<VBox id="header">
 		<Label styleClass="logo-font" text="JavaFx Excel Upload" />
 	</VBox>
