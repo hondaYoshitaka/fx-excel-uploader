@@ -7,7 +7,7 @@
 
 <?import fx.excel.upload.scene.control.*?>
 
-<VBox fx:controller="fx.excel.upload.controller.ExcelViewerContorller" id="container" xmlns:fx="http://javafx.com/fxml" >
+<VBox fx:controller="fx.excel.upload.controller.Controller" id="container" xmlns:fx="http://javafx.com/fxml" >
 	<VBox id="header">
 		<Label styleClass="logo-font" text="JavaFx Excel Upload" />
 	</VBox>
@@ -18,13 +18,13 @@
 		<Button fx:id="fileListRefreshBtn" onAction="#handleListRefresh" text="refresh"/>
 		<Separator />
 	</ToolBar>
-	
+
 	<AnchorPane id="list">
 		<children>
 		    <ListView fx:id="excelListView" styleClass="excel-list" />
 		 </children>
 	</AnchorPane>
-	
+
 	<AnchorPane id="detail">
 		<children>
 			<SpreadSheetView fx:id="excelDetail" styleClass="spread-sheet" />

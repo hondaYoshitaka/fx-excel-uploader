@@ -20,13 +20,18 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MultipleSelectionModel;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.util.Callback;
 
-public class ExcelViewerContorller implements Initializable {
+public class ExcelViewerController implements Initializable {
+	
+	@FXML
+	public Button fileListRefreshBtn;
 	
 	@FXML
 	public ListView<ExcelListModel> excelListView;
@@ -60,7 +65,8 @@ public class ExcelViewerContorller implements Initializable {
 			}
 		});
 		
-		this.excelListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ExcelListModel>() {
+		MultipleSelectionModel<ExcelListModel> selectionModel = this.excelListView.getSelectionModel();
+		selectionModel.selectedItemProperty().addListener(new ChangeListener<ExcelListModel>() {
 			
 			@Override
 			public void changed(ObservableValue<? extends ExcelListModel> arg0, ExcelListModel arg1, ExcelListModel arg2) {
@@ -106,6 +112,7 @@ public class ExcelViewerContorller implements Initializable {
 		try {
 			excelService.insert(excel);
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 		handleListRefresh(event);
@@ -124,6 +131,7 @@ public class ExcelViewerContorller implements Initializable {
 		for (Map<String, Object> map : excelList) {
 			excelListModelList.add(createExcelListModel(map));
 		}
+		event.consume();
 	}
 	
 	/**
