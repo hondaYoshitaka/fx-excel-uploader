@@ -19,15 +19,17 @@
 		<Separator />
 	</ToolBar>
 
-	<AnchorPane id="list">
-		<children>
-		    <ListView fx:id="excelListView" styleClass="excel-list" />
-		 </children>
-	</AnchorPane>
+	<HBox>
+		<AnchorPane id="list">
+			<children>
+			    <ListView fx:id="excelListView" styleClass="excel-list" />
+			 </children>
+		</AnchorPane>
 
-	<AnchorPane id="detail">
-		<children>
-			<SpreadSheetView fx:id="excelDetail" styleClass="spread-sheet" />
-		</children>
-	</AnchorPane>
+		<AnchorPane id="detail">
+			<children>
+				<SpreadSheetView fx:id="excelDetail" styleClass="spread-sheet" />
+			</children>
+		</AnchorPane>
+	</HBox>
 </VBox>

@@ -65,8 +65,8 @@ public class ExcelViewerController implements Initializable {
 			}
 		});
 		
-		MultipleSelectionModel<ExcelListModel> selectionModel = this.excelListView.getSelectionModel();
-		selectionModel.selectedItemProperty().addListener(new ChangeListener<ExcelListModel>() {
+		MultipleSelectionModel<ExcelListModel> listSelectionModel = this.excelListView.getSelectionModel();
+		listSelectionModel.selectedItemProperty().addListener(new ChangeListener<ExcelListModel>() {
 			
 			@Override
 			public void changed(ObservableValue<? extends ExcelListModel> arg0, ExcelListModel arg1, ExcelListModel arg2) {

@@ -2,28 +2,31 @@
 
 #container{
 	-fx-pref-width: 1000px;
-	-fx-pref-height: 700px;
 }
 
 #header{
-	-fx-background-color: #140079;
 	-fx-padding: 15 0 15 20;
+	-fx-background-image: url('../img/congruent_pentagon.png');
+}
+#toolbar{
 }
 
 .logo-font{
-	-fx-font-size: 20pt;
-	-fx-text-fill: #ffffff;
+	-fx-font-size: 23pt;
+	-fx-text-fill: #16a085;
+	-fx-font-family: 'Courier New';
 }
 
 .excel-list{
-	-fx-pref-width: 1000px;
-	-fx-pref-height: 100px;
+	-fx-pref-width: 200px;
+	-fx-pref-height: 550px;
 }
 
 /* for SpreadSheet */
 
 .spread-sheet{
 	-fx-pref-width: 1000px;
+	-fx-pref-height: 550px;
 }
 
 #excel-row-header{

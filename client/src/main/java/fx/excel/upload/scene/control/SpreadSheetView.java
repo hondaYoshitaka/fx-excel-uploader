@@ -102,7 +102,7 @@ public class SpreadSheetView extends TableView<SpreadSheetProperty> {
 		
 		/**
 		 * 行番号を取得します。
-		 * 
+		 *
 		 * <pre>
 		 * 命名規則: 行のキー(rowHeader) + Property
 		 * </pre>
