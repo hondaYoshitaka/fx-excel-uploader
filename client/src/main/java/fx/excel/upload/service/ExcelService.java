@@ -35,8 +35,6 @@ public class ExcelService {
 	
 	private static final String GET_EXCEL_DETAIL_URL = DOMAIN_URL + CONTEXT_NAME + "/excel/{{excelFileId}}";
 	
-	private HttpClient client = HttpClientBuilder.create().build();
-	
 	public void insert(File excel) throws IOException {
 		HttpPost httpPost = new HttpPost(POST_EXCEL_URL);
 		
@@ -46,6 +44,7 @@ public class ExcelService {
 		mBuilder.addBinaryBody("uploadFile", excel, ContentType.create("application/excel"), excel.getName());
 		httpPost.setEntity(mBuilder.build());
 		
+		HttpClient client = HttpClientBuilder.create().build();
 		HttpResponse response = client.execute(httpPost);
 		int statusCode = response.getStatusLine().getStatusCode();
 		if (statusCode != HttpStatus.SC_OK) {
@@ -57,6 +56,7 @@ public class ExcelService {
 		HttpGet httpget = new HttpGet(GET_EXCEL_LIST_URL);
 		HttpEntity entity = null;
 		
+		HttpClient client = HttpClientBuilder.create().build();
 		HttpResponse response = client.execute(httpget);
 		int statusCode = response.getStatusLine().getStatusCode();
 		if (statusCode != HttpStatus.SC_OK) {
@@ -75,6 +75,7 @@ public class ExcelService {
 		HttpGet httpget = new HttpGet(buildDetailUrl(GET_EXCEL_DETAIL_URL, excelFileId));
 		HttpEntity entity = null;
 		
+		HttpClient client = HttpClientBuilder.create().build();
 		HttpResponse response = client.execute(httpget);
 		int statusCode = response.getStatusLine().getStatusCode();
 		if (statusCode != HttpStatus.SC_OK) {
