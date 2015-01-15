@@ -6,7 +6,7 @@
 	<groupId>fx-excel-upload</groupId>
 	<artifactId>fx-excel-upload</artifactId>
 	<packaging>pom</packaging>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 
 	<modules>
 		<module>./client</module>
