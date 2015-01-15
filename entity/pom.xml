@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>fx-excel-upload</groupId>
 		<artifactId>fx-excel-upload</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.0.1</version>
 	</parent>
 
 	<properties>
