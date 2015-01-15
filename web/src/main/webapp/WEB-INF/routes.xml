@@ -1,0 +1,8 @@
+<routes>
+	<controller name="api.Excel">
+		<get path="/excel" to="list"/>
+		<post path="/excel" to="upload"/>
+		<get path="/excel/:excelFileId" to="show"/>
+	</controller>
+
+</routes>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE components PUBLIC "-//SEASAR//DTD S2Container 2.4//EN"
+        "http://www.seasar.org/dtd/components24.dtd">
+<components>
+  <include path="customizer.dicon"/>
+  <include path="convention.dicon"/>
+
+  <component name="actionCreator" class="org.seasar.framework.container.creator.ActionCreator"/>
+  <component name="formCreator" class="org.seasar.struts.creator.FormCreator"/>
+  <component name="logicCreator" class="org.seasar.framework.container.creator.LogicCreator"/>
+  <component name="serviceCreator" class="org.seasar.framework.container.creator.ServiceCreator"/>
+  <component name="interceptorCreator" class="org.seasar.framework.container.creator.InterceptorCreator"/>
+
+</components>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<?import fx.excel.upload.scene.control.*?>
+
+<VBox fx:controller="fx.excel.upload.controller.ExcelViewerController" id="container" xmlns:fx="http://javafx.com/fxml" >
+	<VBox id="header">
+		<Label styleClass="logo-font" text="JavaFx Excel Upload" />
+	</VBox>
+
+	<ToolBar id="toolbar">
+		<Separator />
+		<Button fx:id="fileUploadBtn" onAction="#handleFileChoose" text="upload"/>
+		<Button fx:id="fileListRefreshBtn" onAction="#handleListRefresh" text="refresh"/>
+		<Separator />
+	</ToolBar>
+
+	<HBox>
+		<AnchorPane id="list">
+			<children>
+			    <ListView fx:id="excelListView" styleClass="excel-list" />
+			 </children>
+		</AnchorPane>
+
+		<AnchorPane id="detail">
+			<children>
+				<SpreadSheetView fx:id="excelDetail" styleClass="spread-sheet" />
+			</children>
+		</AnchorPane>
+	</HBox>
+</VBox>
