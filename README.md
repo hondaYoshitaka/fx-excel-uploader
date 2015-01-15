@@ -13,22 +13,26 @@ ExcelアップロードとViewerです。
 ### mysqlの設定
 ```bash
 # スキーマの作成
-CREATE DATABASE fx_excel;
+mysql> CREATE DATABASE fx_excel;
 # ユーザの作成と権限の付与
-GRANT ALL PRIVILEGES ON fx_excel.* TO 'fx_excel'@'localhost' IDENTIFIED BY 'fx_excel';
+mysql> GRANT ALL PRIVILEGES ON fx_excel.* TO 'fx_excel'@'localhost' IDENTIFIED BY 'fx_excel';
+```
+```bash
+# テーブルの作成
+> mysql -uroot -p fx_excel < {{プロジェクトDir}}/entity/src/test/resources/dump/fx_excel.dmp
 ```
 
 アプリケーションの起動
 -----
 ### tomcatサーバの起動
-基底ディレクトリwebにおいて以下のMAVENコマンドを実行
+基底ディレクトリwebにおいて
 ```bash
-mvn tomcat7:run
+> mvn tomcat7:run
 ```
 http://tomcat.apache.org/maven-plugin-2.0/tomcat7-maven-plugin/
 
 ### JavaFX8 クライアントアプリの起動
 ```bash
-mvn jfx:run
+> mvn jfx:run
 ```
 https://github.com/zonski/javafx-maven-plugin
