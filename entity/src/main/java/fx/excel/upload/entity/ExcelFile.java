@@ -33,6 +33,6 @@ public class ExcelFile implements Serializable {
 
     /** ファイルデータ */
     @Lob
-    @Column(name = "FILE_DATA", length = 65535, nullable = false, unique = false)
+    @Column(name = "FILE_DATA", length = 16777215, nullable = false, unique = false)
     public String fileData;
 }
