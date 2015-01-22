@@ -5,6 +5,7 @@ ExcelアップロードとViewerです。
 <!-- Banner start -->
 <img style="height:40px;" src="http://www.oracle.com/ocom/groups/public/@otn/documents/digitalasset/402460.gif" height="40" />&nbsp;
 <img style="height:40px;" src="http://www-jp.mysql.com/common/logos/logo-mysql-170x115.png" height="40" />&nbsp;
+<img style="height:40px;" src="http://maven.apache.org/images/logos/maven-feather.png" height="35" />&nbsp;
 <img style="height:40px;" src="http://www.seasar.org/images/seasar_logo_blue.gif" height="40" />&nbsp;
 <!-- Banner end -->
 
