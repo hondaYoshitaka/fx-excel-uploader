@@ -28,7 +28,7 @@
 
 		<AnchorPane id="detail">
 			<children>
-				<SpreadSheetView fx:id="excelDetail" styleClass="spread-sheet" />
+				<SpreadSheetView fx:id="excelDetail" editable="true" styleClass="spread-sheet" />
 			</children>
 		</AnchorPane>
 	</HBox>

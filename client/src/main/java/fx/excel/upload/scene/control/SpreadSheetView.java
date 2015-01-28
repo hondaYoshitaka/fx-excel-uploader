@@ -1,78 +1,115 @@
 package fx.excel.upload.scene.control;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import fx.excel.upload.scene.control.SpreadSheetView.SpreadSheetProperty;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import fx.excel.upload.scene.control.SpreadSheetView.SpreadSheetRowData;
 import fx.excel.upload.util.ExcelUtil;
 
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.Callback;
+import javafx.util.converter.DefaultStringConverter;
 
-public class SpreadSheetView extends TableView<SpreadSheetProperty> {
+public class SpreadSheetView extends TableView<SpreadSheetRowData> {
 	
-	/**
-	 * ヘッダー行とカラム設定を作成します。
-	 */
-	public void createColumns(int columnSize) {
-		ObservableList<TableColumn<SpreadSheetProperty, ?>> columns = this.getColumns();
-		
-		if (columns.size() != 0) {
+	/** 数式計算のための擬似的なExcelシート */
+	private Sheet sheet;
+	
+	@SuppressWarnings("resource")
+	public void init(String extension) {
+		ObservableList<TableColumn<SpreadSheetRowData, ?>> columns = this.getColumns();
+		if (!columns.isEmpty()) {
 			columns.clear();
 		}
-		List<SpreadSheetColumn> newColumns = new ArrayList<SpreadSheetColumn>();
-		
-		// 行のヘッダー列 の設定をする
-		SpreadSheetColumn rowHeader = new SpreadSheetColumn("rowHeader");
-		rowHeader.setText("");
-		rowHeader.setId("excel-row-header");
-		rowHeader.setCellValueFactory(new PropertyValueFactory<SpreadSheetProperty, String>("rowHeader"));
-		newColumns.add(rowHeader);
-		
-		// 行のデータ列 の設定をする
-		for (int index = 0; index < columnSize; index++) {
-			String propertyKey = "" + index;
-			
-			SpreadSheetColumn column = new SpreadSheetColumn(propertyKey);
-			column.setText(ExcelUtil.createCelNumber(index));
-			
-			newColumns.add(column);
+		Workbook workbook = null;
+		switch (extension) {
+			case "xls":
+				workbook = new HSSFWorkbook();
+				break;
+			case "xlsx":
+				workbook = new XSSFWorkbook();
+				break;
+			default:
+				throw new RuntimeException("Illegal extension: " + extension);
 		}
-		columns.addAll(newColumns);
+		sheet = workbook.createSheet();
+		sheet.setForceFormulaRecalculation(true);
 	}
 	
 	/**
-	 * <スプレッドシート:カラムを表すクラス>
+	 * ヘッダー行とカラム設定を作成します。
 	 *
-	 * @author honda
+	 * @param columnSize
 	 */
-	public static class SpreadSheetColumn extends TableColumn<SpreadSheetProperty, String> {
+	public void settingColumns(int columnSize) {
+		// 行ヘッダーの列 を作成する
+		TableColumn<SpreadSheetRowData, String> rowHeader = new TableColumn<SpreadSheetRowData, String>("rowHeader");
+		rowHeader.setId("excel-row-header");
+		rowHeader.setText("");
+		rowHeader.setCellValueFactory(new PropertyValueFactory<SpreadSheetRowData, String>("rowHeader"));
 		
-		public SpreadSheetColumn(String columnIndex) {
-			super(columnIndex);
+		this.getColumns().add(rowHeader);
+		
+		// 行データの列 を作成する
+		for (int index = 0; index < columnSize; index++) {
+			final String propertyKey = "" + index;
 			
-			// 動的に値を取得するコールバックをセットする
-			this.setCellValueFactory(new Callback<CellDataFeatures<SpreadSheetProperty, String>, ObservableValue<String>>() {
+			TableColumn<SpreadSheetRowData, String> column = new TableColumn<SpreadSheetRowData, String>(propertyKey);
+			column.setText(ExcelUtil.createCelNumber(index));
+			column.setCellValueFactory(new Callback<CellDataFeatures<SpreadSheetRowData, String>, ObservableValue<String>>() {
 				
-				public ObservableValue<String> call(CellDataFeatures<SpreadSheetProperty, String> dataFeatures) {
-					CelProperty celProperty = dataFeatures.getValue().getCelProperty(columnIndex);
+				public ObservableValue<String> call(CellDataFeatures<SpreadSheetRowData, String> dataFeatures) {
+					CellProperty celProperty = dataFeatures.getValue().cellProperty(propertyKey);
 					
 					return celProperty.getCelData();
 				}
 			});
+			// 編集可能なセルを作成する
+			column.setCellFactory(new Callback<TableColumn<SpreadSheetRowData, String>, TableCell<SpreadSheetRowData, String>>() {
+				
+				@Override
+				public TableCell<SpreadSheetRowData, String> call(TableColumn<SpreadSheetRowData, String> arg0) {
+					return new TextFieldTableCell<SpreadSheetRowData, String>(new DefaultStringConverter());
+				}
+			});
+			this.getColumns().add(column);
 		}
+	}
+	
+	/**
+	 * SpreadSheetView用の行データを作成します。
+	 *
+	 * @param rowNumber
+	 * @param rowData
+	 * @return
+	 */
+	public Row createRow(int rowNumber, List<String> rowData) {
+		Row row = sheet.createRow(rowNumber);
+		
+		for (int cellIndex = 0; cellIndex < rowData.size(); cellIndex++) {
+			String data = rowData.get(cellIndex);
+			
+			Cell cell = row.createCell(cellIndex);
+			cell.setCellValue(data);
+		}
+		return row;
 	}
 	
 	/**
@@ -80,24 +117,15 @@ public class SpreadSheetView extends TableView<SpreadSheetProperty> {
 	 *
 	 * @author honda
 	 */
-	public static class SpreadSheetProperty {
+	public static class SpreadSheetRowData {
 		
 		public IntegerProperty rowHeader;
 		
-		public ObjectProperty<Map<String, CelProperty>> cels;
+		public Row row;
 		
-		public SpreadSheetProperty(int rowNum, List<String> rowDataList) {
-			rowHeader = new SimpleIntegerProperty(rowNum + 1);
-			
-			cels = new SimpleObjectProperty<Map<String, CelProperty>>();
-			if (rowDataList != null) {
-				Map<String, CelProperty> map = new HashMap<String, CelProperty>();
-				for (int index = 0; index < rowDataList.size(); index++) {
-					String celData = rowDataList.get(index);
-					map.put("" + index, new CelProperty(celData));
-				}
-				this.cels.set(map);
-			}
+		public SpreadSheetRowData(int rowNum, Row row) {
+			this.rowHeader = new SimpleIntegerProperty(rowNum + 1);
+			this.row = row;
 		}
 		
 		/**
@@ -119,15 +147,13 @@ public class SpreadSheetView extends TableView<SpreadSheetProperty> {
 		 * @param columnNumber
 		 * @return
 		 */
-		public CelProperty getCelProperty(String columnNumber) {
-			if (cels.get() == null) {
-				cels.set(new HashMap<String, CelProperty>());
+		public CellProperty cellProperty(String columnNumber) {
+			Cell cellData = row.getCell(Integer.parseInt(columnNumber));
+			
+			if (cellData == null || cellData.getStringCellValue() == null) {
+				return new CellProperty("");
 			}
-			// カラム番号にデータがない場合は、空文字とする
-			if (!cels.get().containsKey(columnNumber)) {
-				cels.get().put(columnNumber, new CelProperty(""));
-			}
-			return cels.get().get(columnNumber);
+			return new CellProperty(cellData.getStringCellValue());
 		}
 	}
 	
@@ -136,10 +162,10 @@ public class SpreadSheetView extends TableView<SpreadSheetProperty> {
 	 *
 	 * @author honda
 	 */
-	public static class CelProperty {
+	public static class CellProperty {
 		private StringProperty celData = new SimpleStringProperty();
 		
-		public CelProperty(String data) {
+		public CellProperty(String data) {
 			this.celData.set(data);
 		}
 		
